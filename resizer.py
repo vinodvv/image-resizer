@@ -1,3 +1,9 @@
+"""
+THE APP:
+Batch image resizer that processes all images in a folder and resizes
+them to 50% of their original size using the Pillow library.
+"""
+
 # Import necessary libraries
 import os
 from PIL import Image
@@ -10,19 +16,27 @@ print("====================\n")
 INPUT_DIR = 'images'
 OUTPUT_DIR = 'resized_images'
 
+# Define formats and new image scale
+SUPPORTED_FORMATS = ('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp')
+SCALE_FACTOR = 0.5
+
 # Create output folder if it doesn't exist
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # Get list of image files from input folder
 print("Scanning images folder...")
 
-image_files = []
+if not os.path.isdir(INPUT_DIR):
+    print(f"Input folder '{INPUT_DIR}' not found.")
+    raise SystemExit(1)
 
-for image in os.listdir(INPUT_DIR):
-    if image.lower().endswith(('.jpg', '.jpeg', '.png')):
-        image_files.append(image)
+image_files = [image for image in os.listdir(INPUT_DIR) if image.lower().endswith(SUPPORTED_FORMATS)]
 
-print(f"found {len(image_files)} images to resize\n")
+if not image_files:
+    print("No supported image files found. Nothing to do.")
+    raise SystemExit(0)
+
+print(f"Found {len(image_files)} images to resize\n")
 
 # Print processing header
 print("Processing images....")
@@ -31,26 +45,31 @@ print("----------------------")
 
 # Loop through each image file
 for filename in image_files:
-    # Build full path to input image
+    # Build full path to input image and output image
     input_path = os.path.join(INPUT_DIR, filename)
+    output_path = os.path.join(OUTPUT_DIR, filename)
 
     # Open the image
-    img = Image.open(input_path)
+    try:
+        with Image.open(input_path) as img:
+            # Calculate new dimensions (50% of original)
+            new_width = int(img.width * SCALE_FACTOR)
+            new_height = int(img.height * SCALE_FACTOR)
 
-    # Calculate new dimensions (50% of original)
-    new_width = img.width // 2
-    new_height = img.height // 2
+            # Print resizing info
+            print(f"Resizing: {filename} ({img.width}x{img.height}) -> ({new_width}x{new_height})")
 
-    # Print resizing info
-    print(f"Resizing: {filename} ({img.width}x{img.height}) -> ({new_width}x{new_height})")
+            # Resize the image
+            resized_img = img.resize(
+                (new_width, new_height),
+                resample=Image.LANCZOS
+            )
 
-    # Resize the image
-    resized_img = img.resize((new_width, new_height))
-
-    # Build output path and save
-    output_path = os.path.join(OUTPUT_DIR, filename)
-    resized_img.save(output_path)
-    print(f"Saved to: {output_path}\n")
+            # Save resized image
+            resized_img.save(output_path)
+            print(f"✔️ Saved to: {output_path}\n")
+    except Exception as e:
+        print(f"❌ Failed to process {filename}: {e}")
 
 # Print completion message
 print("All images resized successfully!")
