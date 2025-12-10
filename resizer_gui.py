@@ -71,8 +71,8 @@ def resize_images():
             with Image.open(image_path) as img:
                 # Calculate new size
                 width, height = img.size
-                new_width = int(width * (SCALE_FACTOR // 100))
-                new_height = int(height * (SCALE_FACTOR // 100))
+                new_width = int(width * (SCALE_FACTOR // 100.0))
+                new_height = int(height * (SCALE_FACTOR // 100.0))
 
                 # Ensure dimensions are at least 1
                 new_width = max(1, new_width)
