@@ -33,11 +33,17 @@ Install Pillow:
 ## Project structure
 
 image-resizer/
+
 ├─ resizer.py
+
 ├─ resizer_gui.py
+
 ├─ images/ # Optional sample input folder for CLI
+
 ├─ resized_images/ # Output folder (created automatically)
+
 ├─ README.md
+
 └─ LICENSE
 
 
