@@ -42,6 +42,8 @@ print(f"Found {len(image_files)} images to resize\n")
 print("Processing images....")
 print("----------------------")
 
+success = 0
+failed = 0
 
 # Loop through each image file
 for filename in image_files:
@@ -62,14 +64,16 @@ for filename in image_files:
             # Resize the image
             resized_img = img.resize(
                 (new_width, new_height),
-                resample=Image.LANCZOS
+                resample=Image.Resampling.LANCZOS
             )
 
             # Save resized image
             resized_img.save(output_path)
             print(f"✔️ Saved to: {output_path}\n")
+            success += 1
     except Exception as e:
         print(f"❌ Failed to process {filename}: {e}")
+        failed += 1
 
 # Print completion message
-print("All images resized successfully!")
+print(f"[SUCCESS]: Resized {success} image(s), failed: {failed}.")
